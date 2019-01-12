@@ -28,24 +28,56 @@ namespace RSSReader
             InitializeComponent();
         }
 
-        private void LoadFeedButtonClick(object sender, RoutedEventArgs e)
+        private async void LoadFeedButtonClick(object sender, RoutedEventArgs e)
         {
             string rssURL = urlTB.Text;
 
             if(rssURL != string.Empty)
             {
-                HttpWebRequest rssRequest = WebRequest.Create(rssURL) as HttpWebRequest;
-                rssRequest.KeepAlive = false;
+                XDocument doc = null;
 
-                HttpWebResponse response = rssRequest.GetResponse() as HttpWebResponse;
-                outputTB.Text = response.ContentType;
+                await Task.Run(() => 
+                {
+                    HttpWebRequest rssRequest = (HttpWebRequest)WebRequest.Create(rssURL);
+                    rssRequest.KeepAlive = false;
+                    HttpWebResponse response = (HttpWebResponse)rssRequest.GetResponse();
+                    doc = XDocument.Load(response.GetResponseStream());
+                    response.Close();
+                });
 
-                XDocument doc = XDocument.Load(response.GetResponseStream());
+                ParseResponse(doc);
             }
             else
             {
                 MessageBox.Show("RSS feed URL is empty", "Error");
             }
+        }
+
+        public void ParseResponse(XDocument doc)
+        {
+            var rss = doc.Element("rss");
+            var channel = rss.Element("channel");
+
+            string chTitle = channel.Element("title").Value;
+
+            TreeViewItem channelItem = new TreeViewItem
+            {
+                Header = chTitle
+            };
+
+            foreach (var item in channel.Elements("item"))
+            {
+                string title = item.Element("title").Value;
+
+                TreeViewItem itemBranch = new TreeViewItem
+                {
+                    Header = title
+                };
+
+                channelItem.Items.Add(itemBranch);
+            }
+
+            chanelsTree.Items.Add(channelItem);
         }
     }
 }

@@ -17,6 +17,6 @@
         </Grid.RowDefinitions>
         <TextBox Name="urlTB" Height="30" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Padding="0,5,0,0"></TextBox>
         <Button Height="30" Grid.Column="1" Grid.Row="0" Content="Load RSS feed" Click="LoadFeedButtonClick"/>
-        <TextBlock Name="outputTB" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"></TextBlock>
+        <TreeView Name="chanelsTree" Grid.ColumnSpan="2" Grid.Row="1"></TreeView>
     </Grid>
 </Window>
