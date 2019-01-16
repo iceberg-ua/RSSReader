@@ -6,3 +6,6 @@
 /.vs/RSSReader/v15/Server/sqlite3
 /.vs/RSSReader/v15
 /RSSReader/bin/Debug
+/RSSReader/bin/Release
+/RSSReader/obj/Release
+/.vs

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,33 +31,65 @@ namespace RSSReader
             InitializeComponent();
         }
 
-        private async void LoadFeedButtonClick(object sender, RoutedEventArgs e)
+        private void LoadFeedButtonClick(object sender, RoutedEventArgs e)
         {
-            string rssURL = urlTB.Text;
+            ParseResponse(urlTB.Text);
+        }
 
-            if(rssURL != string.Empty)
+        private async Task<string> LoadFeedWithHttpRequest(string uri)
+        {
+            string resultStream = string.Empty;
+
+            if (uri != string.Empty)
             {
-                XDocument doc = null;
+                HttpWebRequest rssRequest = (HttpWebRequest)WebRequest.Create(uri);
+                rssRequest.KeepAlive = false;
+                var response = await rssRequest.GetResponseAsync();
 
-                await Task.Run(() => 
-                {
-                    HttpWebRequest rssRequest = (HttpWebRequest)WebRequest.Create(rssURL);
-                    rssRequest.KeepAlive = false;
-                    HttpWebResponse response = (HttpWebResponse)rssRequest.GetResponse();
-                    doc = XDocument.Load(response.GetResponseStream());
-                    response.Close();
-                });
-
-                ParseResponse(doc);
+                var strmReader = new StreamReader(response.GetResponseStream());
+                resultStream = strmReader.ReadToEnd();
+                response.Close();
             }
             else
             {
                 MessageBox.Show("RSS feed URL is empty", "Error");
             }
+
+            return resultStream;
         }
 
-        public void ParseResponse(XDocument doc)
+        private async Task<Stream> LoadFeedWithHttpClient(string uri)
         {
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    HttpResponseMessage response = await client.GetAsync(uri);
+                    response.EnsureSuccessStatusCode();
+                    return await response.Content.ReadAsStreamAsync();
+                }
+                catch (HttpRequestException e)
+                {
+                    MessageBox.Show(e.Message);
+                    return null;
+                }
+            }
+        }
+
+        private async void ParseResponse(string uri)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+
+            var content = await LoadFeedWithHttpRequest(uri);
+            XDocument doc = XDocument.Parse(content);
+
+            //var content = await LoadFeedWithHttpClient(uri);
+            //XDocument doc = XDocument.Load(content);
+
+            sw.Stop();
+            MessageBox.Show(sw.ElapsedMilliseconds.ToString());
+
             var rss = doc.Element("rss");
             var channel = rss.Element("channel");
 
