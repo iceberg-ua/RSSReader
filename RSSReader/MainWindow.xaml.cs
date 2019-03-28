@@ -91,10 +91,12 @@ namespace RSSReader
          foreach (var item in channel.Elements("item"))
          {
             string title = item.Element("title").Value;
+            string link = item.Element("link").Value;
 
             ArticleItem itemBranch = new ArticleItem
             {
-               Header = title
+               Header = title,
+               Link = link
             };
 
             channelItem.Items.Add(itemBranch);

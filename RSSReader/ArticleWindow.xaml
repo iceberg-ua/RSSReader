@@ -1,12 +1,15 @@
-﻿<Window x:Class="RSSReader.ArticleWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RSSReader"
+        xmlns:XamlHost="clr-namespace:Microsoft.Toolkit.Wpf.UI.XamlHost;assembly=Microsoft.Toolkit.Wpf.UI.XamlHost" xmlns:Controls="clr-namespace:Microsoft.Toolkit.Wpf.UI.Controls;assembly=Microsoft.Toolkit.Wpf.UI.Controls.WebView" x:Class="RSSReader.ArticleWindow"
         mc:Ignorable="d"
         Title="ArticleWindow" Height="450" Width="800">
     <Grid>
-        
+        <Controls:WebView Name="webViewer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <!--<XamlHost:WindowsXamlHost HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        </XamlHost:WindowsXamlHost>-->
     </Grid>
 </Window>
